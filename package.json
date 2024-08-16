@@ -10,6 +10,7 @@
   "description": "",
   "dependencies": {
     "express": "^4.19.2",
+    "mysql2": "^3.11.0",
     "protobufjs": "^7.3.2"
   }
 }
