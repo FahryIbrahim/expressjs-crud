@@ -35,7 +35,7 @@ router.get('/', (req, res) => {
 router.post(
   '/store',
   [
-    // Validation
+    //validation
     body('title').notEmpty(),
     body('content').notEmpty(),
   ],
@@ -48,29 +48,60 @@ router.post(
       });
     }
 
-    // Define formData
+    //define formData
     let formData = {
       title: req.body.title,
       content: req.body.content,
     };
 
-    // Insert Query
-    connection.query('INSERT INTO posts SET ?', formData, (err, result) => {
+    // insert query
+    connection.query('INSERT INTO posts SET ?', formData, function (err, rows) {
+      //if(err) throw err
       if (err) {
-        console.error('Database Insert Error:', err); // Log the error
         return res.status(500).json({
           status: false,
           message: 'Internal Server Error',
         });
       } else {
-        return res.status(200).json({
+        return res.status(201).json({
           status: true,
           message: 'Insert Data Successfully',
-          data: result.insertId,
+          data: rows[0],
         });
       }
     });
   }
 );
+// ---------------
+// Show Post
+// ---------------
+router.get('/(:id)', function (req, res) {
+  let id = req.params.id;
+
+  connection.query(
+    `SELECT * FROM posts WHERE id = ${id}`,
+    function (err, rows) {
+      if (err) {
+        return res.status(500).json({
+          status: false,
+          message: 'Internal Server Error',
+        });
+      }
+
+      if (rows.length <= 0) {
+        return res.status(404).json({
+          status: false,
+          message: 'Data Post Not Found!',
+        });
+      } else {
+        return res.status(200).json({
+          status: true,
+          message: 'Detail Data Post',
+          data: rows[0],
+        });
+      }
+    }
+  );
+});
 
 module.exports = router;
